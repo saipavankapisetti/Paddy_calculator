@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Paddy Calculator</title>
+</head>
+<body>
+    <h1>Paddy Calculator</h1>
+    <form id="calculatorForm">
+        <label for="num_bags">Number of Bags:</label>
+        <input type="number" id="num_bags" name="num_bags" required>
+        <br>
+        <label for="bag_weight">Bag Weight (kg):</label>
+        <input type="number" id="bag_weight" name="bag_weight" step="0.01" required>
+        <br>
+        <label for="price_per_bag">Price per Bag:</label>
+        <input type="number" id="price_per_bag" name="price_per_bag" step="0.01" required>
+        <br>
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="result">
+        <h2>Result</h2>
+        <p id="total_weight_kg"></p>
+        <p id="total_amount"></p>
+    </div>
+
+    <script>
+        document.getElementById('calculatorForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/calculate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    document.getElementById('total_weight_kg').textContent = 'Error: ' + data.error;
+                    document.getElementById('total_amount').textContent = '';
+                } else {
+                    document.getElementById('total_weight_kg').textContent = 'Total Weight (kg): ' + data.total_weight_kg;
+                    document.getElementById('total_amount').textContent = 'Total Amount: ' + data.total_amount;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
